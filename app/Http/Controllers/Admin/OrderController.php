@@ -26,7 +26,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         return view('admin.pages.orders.show', [
-            'title' => 'Chi tiết sản phẩm',
+            'title' => 'Chi tiết đơn hàng',
             'order' => $order,
         ]);
     }

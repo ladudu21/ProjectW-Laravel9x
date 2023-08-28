@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendOrderEmail;
 use App\Models\ItemOrder;
 use App\Models\Order;
 use App\Models\ProductDetail;
@@ -116,17 +117,15 @@ class CartService
 
             if ($addCart == false) {
                 throw new Exception("Số lượng sp k đủ");
-            }
-            else $order->update([
+            } else $order->update([
                 'total' => $addCart
             ]);
 
             DB::commit();
             Session::flash('success', 'Đặt hàng thành công');
 
-            #Queue
-            // $products = $this->getProducts();
-            // SendMail::dispatch($request->input('name'), $request->input('email'), $products, $carts)->delay(now()->addSeconds(2));
+            //Gửi email
+            SendOrderEmail::dispatch($order);
 
             Session::forget('carts');
         } catch (\Exception $err) {
@@ -162,7 +161,7 @@ class CartService
                 $total += $sub_product->product->price * $qty;
             }
         }
-        
+
         try {
             ItemOrder::insert($data);
         } catch (\Throwable $e) {
